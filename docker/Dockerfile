@@ -43,7 +43,7 @@ ENV PATH=/home/appuser/.local/bin:$PATH
 ENV PYTHONPATH=/home/appuser/.local/lib/python3.11/site-packages
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
-ENV PORT=5000
+ENV PORT=4000
 ENV HOST=0.0.0.0
 
 # Change ownership of app directory
@@ -53,11 +53,11 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 # Expose port
-EXPOSE 5000
+EXPOSE 4000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
+    CMD curl -f http://localhost:4000/health || exit 1
 
 # Use gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "30", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:4000", "--workers", "2", "--timeout", "30", "app:app"]

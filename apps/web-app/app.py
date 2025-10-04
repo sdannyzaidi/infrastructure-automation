@@ -19,6 +19,9 @@ logger = logging.getLogger(__name__)
 # Create Flask app
 app = Flask(__name__)
 
+# Record start time (needed for uptime calculations)
+app.start_time = time.time()
+
 # Prometheus metrics
 REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
 REQUEST_DURATION = Histogram('http_request_duration_seconds', 'HTTP request duration')
@@ -142,12 +145,9 @@ def system_info():
     })
 
 if __name__ == '__main__':
-    # Record start time
-    app.start_time = time.time()
-    
     # Get configuration from environment
     host = os.getenv('HOST', '0.0.0.0')
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 4000))
     debug = os.getenv('DEBUG', 'false').lower() == 'true'
     
     logger.info(f"Starting {APP_NAME} v{APP_VERSION}")

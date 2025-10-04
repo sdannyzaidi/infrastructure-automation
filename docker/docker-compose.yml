@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Main web application
   web-app:
@@ -7,14 +5,14 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     ports:
-      - "5000:5000"
+      - "4000:4000"
     environment:
       - APP_NAME=infrastructure-learning-app
       - APP_VERSION=1.0.0
       - ENVIRONMENT=development
       - DEBUG=false
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
