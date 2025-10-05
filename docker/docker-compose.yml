@@ -4,8 +4,10 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    ports:
-      - "4000:4000"
+    # Remove direct port mapping when scaling
+    # Access via Nginx reverse proxy on port 80
+    # ports:
+    #   - "4000:4000"
     environment:
       - APP_NAME=infrastructure-learning-app
       - APP_VERSION=1.0.0
