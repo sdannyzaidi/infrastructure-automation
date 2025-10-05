@@ -25,6 +25,8 @@ app.start_time = time.time()
 # Prometheus metrics
 REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
 REQUEST_DURATION = Histogram('http_request_duration_seconds', 'HTTP request duration')
+ACTIVE_USERS = Counter('active_users_total', 'Total active users')
+CUSTOM_BUSINESS_METRIC = Counter('business_events_total', 'Business events', ['event_type'])
 
 # Application info
 APP_VERSION = os.getenv('APP_VERSION', '1.0.0')
@@ -52,6 +54,9 @@ def after_request(response):
 @app.route('/')
 def home():
     """Home page with application info"""
+    # Simulate business metric
+    ACTIVE_USERS.inc()
+    CUSTOM_BUSINESS_METRIC.labels(event_type='page_view').inc()
     html_template = """
     <!DOCTYPE html>
     <html>
@@ -141,6 +146,61 @@ def system_info():
             'free': psutil.disk_usage('/').free,
             'percent': psutil.disk_usage('/').percent
         },
+        'timestamp': datetime.now().isoformat()
+    })
+
+@app.route('/crash')
+def crash_app():
+    """Endpoint to simulate application crash (for testing)"""
+    logger.error("Application crash simulation triggered!")
+    CUSTOM_BUSINESS_METRIC.labels(event_type='crash_simulation').inc()
+    import sys
+    sys.exit(1)  # This will crash the application
+
+@app.route('/slow')
+def slow_endpoint():
+    """Endpoint that simulates slow response (for testing)"""
+    import time
+    delay = request.args.get('delay', 5, type=int)
+    logger.info(f"Simulating slow response with {delay}s delay")
+    CUSTOM_BUSINESS_METRIC.labels(event_type='slow_request').inc()
+    time.sleep(delay)
+    return jsonify({
+        'message': f'This response was delayed by {delay} seconds',
+        'timestamp': datetime.now().isoformat()
+    })
+
+@app.route('/cpu-load')
+def cpu_load():
+    """Endpoint that simulates high CPU usage (for testing)"""
+    import threading
+    import time
+
+    duration = request.args.get('duration', 10, type=int)
+    threads = request.args.get('threads', 2, type=int)
+
+    logger.info(f"Simulating CPU load with {threads} threads for {duration}s")
+    CUSTOM_BUSINESS_METRIC.labels(event_type='cpu_load_test').inc()
+
+    def cpu_intensive_task():
+        end_time = time.time() + duration
+        while time.time() < end_time:
+            # CPU intensive calculation
+            sum(i * i for i in range(1000))
+
+    # Start multiple threads to create CPU load
+    threads_list = []
+    for i in range(threads):
+        t = threading.Thread(target=cpu_intensive_task)
+        t.start()
+        threads_list.append(t)
+
+    # Wait for all threads to complete
+    for t in threads_list:
+        t.join()
+
+    return jsonify({
+        'message': f'CPU load test completed: {threads} threads for {duration} seconds',
         'timestamp': datetime.now().isoformat()
     })
 

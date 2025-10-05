@@ -1,0 +1,66 @@
+---
+# Main site playbook - orchestrates all server configurations
+# This is your entry point for configuring entire infrastructure
+
+- name: Configure all servers
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  pre_tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+    
+    - name: Install essential packages
+      package:
+        name:
+          - curl
+          - wget
+          - git
+          - htop
+          - vim
+          - unzip
+        state: present
+
+  tasks:
+    - name: Create application user
+      user:
+        name: appuser
+        shell: /bin/bash
+        create_home: yes
+        groups: sudo
+        append: yes
+
+    - name: Set timezone
+      timezone:
+        name: "{{ timezone | default('UTC') }}"
+
+    - name: Configure SSH security
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        backup: yes
+      loop:
+        - { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
+        - { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
+        - { regexp: '^#?PubkeyAuthentication', line: 'PubkeyAuthentication yes' }
+      notify: restart ssh
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: ssh
+        state: restarted
+
+# Web servers configuration
+- import_playbook: webservers.yml
+
+# Database servers configuration  
+- import_playbook: databases.yml
+
+# Monitoring setup
+- import_playbook: monitoring.yml

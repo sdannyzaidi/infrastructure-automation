@@ -13,6 +13,15 @@ services:
       - APP_VERSION=1.0.0
       - ENVIRONMENT=development
       - DEBUG=false
+    # Resource limits for testing
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
       interval: 30s

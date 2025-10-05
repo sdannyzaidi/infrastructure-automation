@@ -1,0 +1,91 @@
+# Deployment - Manages Replica Sets and Rolling Updates
+# This is how you typically deploy applications in production
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-deployment
+  labels:
+    app: web-app
+spec:
+  replicas: 3  # Number of pod instances
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # Max pods above desired count during update
+      maxUnavailable: 1  # Max pods unavailable during update
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+        version: v1.0.0
+    spec:
+      containers:
+      - name: web-app
+        image: python:3.11-slim
+        command: ["/bin/bash"]
+        args:
+          - "-c"
+          - |
+            pip install flask prometheus-client psutil gunicorn &&
+            cat > app.py << 'EOF'
+            from flask import Flask, jsonify
+            import time
+            import os
+            app = Flask(__name__)
+
+            @app.route("/")
+            def home():
+                return jsonify({
+                    "message": "Hello from Kubernetes Deployment!",
+                    "pod_name": os.environ.get("HOSTNAME", "unknown"),
+                    "version": "v1.0.0",
+                    "timestamp": time.time()
+                })
+
+            @app.route("/health")
+            def health():
+                return jsonify({
+                    "status": "healthy",
+                    "pod": os.environ.get("HOSTNAME", "unknown")
+                })
+
+            if __name__ == "__main__":
+                app.run(host="0.0.0.0", port=8080)
+            EOF
+            python app.py
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: APP_NAME
+          value: "kubernetes-learning-app"
+        - name: ENVIRONMENT
+          value: "kubernetes"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      restartPolicy: Always
