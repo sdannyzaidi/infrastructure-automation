@@ -5,9 +5,9 @@ variable "aws_region" {
   description = "AWS region for resources"
   type        = string
   default     = "us-east-1"
-  
+
   validation {
-    condition = can(regex("^[a-z]{2}-[a-z]+-[0-9]$", var.aws_region))
+    condition     = can(regex("^[a-z]{2}-[a-z]+-[0-9]$", var.aws_region))
     error_message = "AWS region must be in the format: us-east-1, eu-west-1, etc."
   }
 }
@@ -16,9 +16,9 @@ variable "project_name" {
   description = "Name of the project (used for resource naming)"
   type        = string
   default     = "infrastructure-learning"
-  
+
   validation {
-    condition = can(regex("^[a-z0-9-]+$", var.project_name))
+    condition     = can(regex("^[a-z0-9-]+$", var.project_name))
     error_message = "Project name must contain only lowercase letters, numbers, and hyphens."
   }
 }
@@ -27,9 +27,9 @@ variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
   default     = "dev"
-  
+
   validation {
-    condition = contains(["dev", "staging", "prod"], var.environment)
+    condition     = contains(["dev", "staging", "prod"], var.environment)
     error_message = "Environment must be one of: dev, staging, prod."
   }
 }

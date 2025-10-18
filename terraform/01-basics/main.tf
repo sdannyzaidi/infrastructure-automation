@@ -19,7 +19,7 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region = var.aws_region
-  
+
   # Use default credentials from AWS CLI or environment variables
   # For learning: aws configure or set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 }
@@ -32,7 +32,7 @@ resource "random_id" "suffix" {
 # Create an S3 bucket (free tier eligible)
 resource "aws_s3_bucket" "learning_bucket" {
   bucket = "${var.project_name}-learning-${random_id.suffix.hex}"
-  
+
   tags = {
     Name        = "Learning Bucket"
     Environment = var.environment
@@ -72,10 +72,10 @@ resource "aws_s3_bucket_public_access_block" "learning_bucket_pab" {
 
 # Create a simple text file in the bucket
 resource "aws_s3_object" "welcome_file" {
-  bucket = aws_s3_bucket.learning_bucket.id
-  key    = "welcome.txt"
+  bucket  = aws_s3_bucket.learning_bucket.id
+  key     = "welcome.txt"
   content = "Welcome to Infrastructure as Code with Terraform!\nThis file was created automatically."
-  
+
   tags = {
     Name = "Welcome File"
     Type = "Documentation"
