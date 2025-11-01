@@ -127,13 +127,13 @@ This project provides a **complete hands-on roadmap** for mastering Site Reliabi
 Use this checklist to track your learning progress:
 
 ### Foundation (Week 1)
-- [ ] **Web App**: Run Flask app locally with virtual environment
-- [ ] **Docker**: Build and run containerized application stack
-- [ ] **Monitoring**: Access Grafana dashboards and Prometheus metrics
+- [x] **Web App**: Run Flask app locally with virtual environment
+- [x] **Docker**: Build and run containerized application stack
+- [x] **Monitoring**: Access Grafana dashboards and Prometheus metrics
 
 ### Infrastructure (Week 2)
-- [ ] **Terraform Basics**: Create S3 bucket and understand state
-- [ ] **AWS Resources**: Deploy VPC, EC2, and load balancer
+- [x] **Terraform Basics**: Create S3 bucket and understand state
+- [x] **AWS Resources**: Deploy VPC, EC2, and load balancer
 - [ ] **Modules**: Create reusable infrastructure components
 
 ### Configuration (Week 3)
