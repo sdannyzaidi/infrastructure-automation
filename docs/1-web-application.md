@@ -1,4 +1,4 @@
-# Web Application Tutorial - Flask with Monitoring
+# 1. Web Application Tutorial - Flask with Monitoring
 
 ## 🎯 What You'll Learn
 This tutorial will teach you how to build and run a production-ready Flask web application with monitoring capabilities. You'll learn to:
@@ -49,69 +49,69 @@ source venv/bin/activate
 which python
 ```
 
-### Step 2: Install Dependencies
+### Step 2: Create Requirements File
 ```bash
-# Upgrade pip to latest version
-python -m pip install --upgrade pip
+# Create requirements.txt with these dependencies:
+cat > requirements.txt << EOF
+Flask==2.3.3
+prometheus-client==0.17.1
+psutil==5.9.5
+gunicorn==21.2.0
+EOF
 
-# Install application dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# Verify installations
+# Verify installation
 pip list
 ```
 
-### Step 3: Run the Application
+### Step 3: Build the Flask Application
 ```bash
-# Run with default settings (development mode)
-python app.py
+# Create the main application file
+touch app.py
 
-# Or run with custom configuration
-export APP_NAME="my-learning-app"
-export APP_VERSION="1.0.0"
-export ENVIRONMENT="development"
-export DEBUG="true"
-python app.py
+# You'll implement the Flask app with:
+# - Health check endpoint (/health)
+# - Metrics endpoint (/metrics) 
+# - System info endpoint (/system)
+# - Main web interface (/)
+# - Proper logging and error handling
 ```
 
-### Step 4: Test the Application
-Open these URLs in your browser or use curl:
+### Step 4: Implement Core Features
+Your Flask application should include:
 
+**Health Check Endpoint**
+- Returns JSON with service status
+- Used by load balancers and monitoring
+
+**Metrics Endpoint**
+- Prometheus-compatible metrics
+- Request counters and histograms
+- Custom application metrics
+
+**System Information**
+- CPU usage percentage
+- Memory usage and availability
+- Disk space utilization
+
+### Step 5: Test Your Application
 ```bash
-# Main application page
-curl http://localhost:4000/
-# or visit: http://localhost:4000
+# Run the application
+python app.py
 
-# Health check (for monitoring)
+# Test endpoints in another terminal
 curl http://localhost:4000/health
-
-# Application information
+curl http://localhost:4000/metrics
+curl http://localhost:4000/system
 curl http://localhost:4000/info
 
-# System metrics
-curl http://localhost:4000/system
-
-# Prometheus metrics
-curl http://localhost:4000/metrics
+# Open web interface
+open http://localhost:4000
 ```
 
-### Step 5: Explore the Code
-Study these key files to understand the implementation:
-
-```bash
-# View the main application code
-cat app.py
-
-# Check the dependencies
-cat requirements.txt
-
-# Look at the application structure
-ls -la
-```
-
-### Step 6: Customize and Experiment
-Try modifying the application:
-
+### Step 6: Development and Debugging
 ```bash
 # Edit the app.py file to add new endpoints
 # Add custom metrics or modify existing ones
@@ -149,41 +149,37 @@ rm -rf venv
 
 ### Environment Variables
 You can customize the application behavior:
-
 ```bash
-# Application settings
-export APP_NAME="your-app-name"
-export APP_VERSION="2.0.0"
-export ENVIRONMENT="production"
+# Change the port (default: 4000)
+export PORT="8080"
 
-# Server settings
-export HOST="0.0.0.0"        # Listen on all interfaces
-export PORT="8080"           # Custom port
-export DEBUG="false"         # Disable debug mode
-
-# Run with custom settings
-python app.py
-```
-
-### Development vs Production
-```bash
-# Development mode (auto-reload, debug info)
+# Enable debug mode
 export DEBUG="true"
-python app.py
 
-# Production mode (stable, optimized)
-export DEBUG="false"
-gunicorn --bind 0.0.0.0:4000 app:app
+# Set application name
+export APP_NAME="My Flask App"
+
+# Run with custom config
+python app.py
 ```
 
-## 📊 Understanding the Monitoring Features
+### Application Structure
+```
+apps/web-app/
+├── app.py              # Main Flask application (you create this)
+├── requirements.txt    # Python dependencies (you create this)
+├── venv/              # Virtual environment
+└── README.md          # This documentation
+```
+
+## 📊 Monitoring Integration
 
 ### Health Checks
-The `/health` endpoint provides:
+The `/health` endpoint returns:
 - Service status (healthy/unhealthy)
 - Uptime information
-- Version details
-- Timestamp for monitoring
+- Basic system metrics
+- JSON format for automation
 
 ### Prometheus Metrics
 The `/metrics` endpoint exposes:
@@ -244,49 +240,35 @@ After completing this tutorial, you will understand:
 - **Flask framework**: Building web applications
 - **Environment configuration**: Using environment variables
 
-### Monitoring and Observability
+### SRE/DevOps Skills
 - **Health checks**: Implementing service health endpoints
 - **Metrics collection**: Exposing Prometheus metrics
 - **System monitoring**: Tracking resource usage
-- **Logging**: Structured application logging
+- **Production deployment**: Using WSGI servers like Gunicorn
 
-### Production Readiness
-- **WSGI servers**: Using gunicorn for production
-- **Configuration management**: Environment-based config
-- **Security considerations**: Non-root execution
-- **Performance monitoring**: Request tracking and timing
+### Best Practices
+- **Code organization**: Structuring Flask applications
+- **Error handling**: Proper exception management
+- **Logging**: Application observability
+- **Security**: Basic security considerations
+
+## 🚀 Next Steps
+After mastering this web application:
+1. **Containerize** it with Docker (Tutorial 2)
+2. **Deploy** it with Kubernetes (Tutorial 5)
+3. **Monitor** it with Prometheus/Grafana (Tutorial 7)
+4. **Automate** deployment with CI/CD (Tutorial 6)
 
 ## 📚 Interview Preparation
-After completing this tutorial, you'll be able to discuss:
-
-1. **"How do you build production-ready web applications?"**
-   - Explain Flask application structure
-   - Discuss health checks and monitoring
-   - Show configuration management
-
-2. **"How do you implement application monitoring?"**
-   - Demonstrate Prometheus metrics integration
-   - Explain health check endpoints
-   - Show system resource monitoring
-
-3. **"How do you manage Python dependencies?"**
-   - Walk through virtual environment setup
-   - Explain requirements.txt usage
-   - Discuss development vs production environments
-
-## 🚀 What's Next?
-Once you've mastered running the app locally:
-
-1. **Containerize it** - Use the Docker tutorial to containerize this app
-2. **Deploy to Kubernetes** - Scale it across multiple containers
-3. **Add CI/CD** - Automate testing and deployment
-4. **Enhance monitoring** - Add more custom metrics and dashboards
-
-## 🎉 Completion
-You now have a solid foundation in:
-- Python web application development
-- Local development environment setup
-- Application monitoring and observability
+This tutorial prepares you for SRE interview questions about:
+- Building monitoring-ready applications
+- Implementing health checks and metrics
+- Python web development
 - Production deployment considerations
+- Troubleshooting application issues
 
-This knowledge directly applies to SRE/DevOps roles where you'll work with applications and their operational requirements!
+**Key Interview Topics:**
+- "How do you make an application observable?"
+- "What metrics would you expose for a web service?"
+- "How do you implement health checks?"
+- "What's the difference between development and production deployment?"
